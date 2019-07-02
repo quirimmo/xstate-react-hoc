@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { PureComponent, ReactNode } from 'react';
 import './App.css';
+import { interpret, EventObject, DefaultContext } from 'xstate';
+import { toggleMachine } from './app-machine';
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends PureComponent {
+  state = { current: toggleMachine.initialState };
+
+  service = interpret(toggleMachine).onTransition((current: DefaultContext, event: EventObject): void => {
+    console.log('Context:', current, '\n', 'Event:', event);
+    this.setState({ current });
+  });
+
+  componentDidMount(): void {
+    this.service.start();
+  }
+
+  componentWillUnmount(): void {
+    this.service.stop();
+  }
+
+  onClick = (): void => {
+    const { send } = this.service;
+    send('TOGGLE');
+  };
+
+  render(): ReactNode {
+    const { current } = this.state;
+
+    return (
+      <button type="button" onClick={this.onClick}>
+        {current.matches('inactive') ? 'Off' : 'On'}
+      </button>
+    );
+  }
 }
+
 
 export default App;
