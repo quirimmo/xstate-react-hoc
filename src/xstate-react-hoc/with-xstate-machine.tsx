@@ -1,10 +1,10 @@
 import React, { PureComponent, ComponentType, ReactNode } from 'react';
 import {
-  Interpreter, DefaultContext, StateSchema, EventObject, StateMachine, interpret, State, OmniEventObject,
+  Interpreter, DefaultContext, StateSchema, EventObject, StateMachine, interpret, State,
 } from 'xstate';
 import { Subtract } from 'utility-types';
 
-export interface WithXStateMachineProps<TContext extends DefaultContext, TStateSchema extends StateSchema, TEvent extends EventObject> {
+export interface WithXStateMachineProps<TContext, TStateSchema extends StateSchema, TEvent extends EventObject> {
   interpreter: Interpreter<TContext, TStateSchema, TEvent>;
   current: State<TContext, TEvent>;
 }
@@ -19,7 +19,7 @@ type HOCProps<
 > = Subtract<T, WithXStateMachineProps<TContext, TStateSchema, TEvent>>;
 
 export type HOCWithXStateMachineType<
-  TContext extends DefaultContext,
+  TContext,
   TStateSchema extends StateSchema,
   TEvent extends EventObject,
   P extends WithXStateMachineProps<TContext, TStateSchema, TEvent>
@@ -30,7 +30,7 @@ export interface WithXStateMachineComponentState<TContext extends DefaultContext
 }
 
 export function withXStateMachine<
-  TContext extends DefaultContext,
+  TContext,
   TStateSchema extends StateSchema,
   TEvent extends EventObject,
   P extends WithXStateMachineProps<TContext, TStateSchema, TEvent>
@@ -59,8 +59,7 @@ export function withXStateMachine<
       this.interpreter.stop();
     }
 
-    onTransition = (current: State<TContext, TEvent>, event: OmniEventObject<TEvent>): void => {
-      console.log('Context:', current, '\n', 'Event:', event);
+    onTransition = (current: State<TContext, TEvent>): void => {
       this.setState({ current });
     };
 
