@@ -1,12 +1,13 @@
 import React, { PureComponent, ComponentType, ReactNode } from 'react';
 import {
-  Interpreter, DefaultContext, StateSchema, EventObject, StateMachine, interpret, State,
+  Interpreter, DefaultContext, StateSchema, EventObject, StateMachine, interpret, State, MachineOptions,
 } from 'xstate';
 import { Subtract } from 'utility-types';
 
 export interface WithXStateMachineProps<TContext, TStateSchema extends StateSchema, TEvent extends EventObject> {
   interpreter: Interpreter<TContext, TStateSchema, TEvent>;
   current: State<TContext, TEvent>;
+  machine: StateMachine<TContext, TStateSchema, TEvent>;
 }
 
 type ComplexHOCType<U extends object, K extends U> = ComponentType<Subtract<K, U>>;
@@ -37,18 +38,22 @@ export function withXStateMachine<
 >(
   Component: ComponentType<P>,
   machine: StateMachine<TContext, TStateSchema, TEvent>,
+  initialContext?: TContext,
+  extendedConfig?: Partial<MachineOptions<TContext, TEvent>>,
 ): HOCWithXStateMachineType<TContext, TStateSchema, TEvent, P> {
   return class WithXStateMachineComponent extends PureComponent<
     HOCProps<TContext, TStateSchema, TEvent, P>,
     WithXStateMachineComponentState<TContext, TEvent>
   > {
-    state: WithXStateMachineComponentState<TContext, TEvent> = { current: machine.initialState as State<TContext, TEvent> };
+    state: WithXStateMachineComponentState<TContext, TEvent> = { current: machine.initialState };
 
+    private machine: StateMachine<TContext, TStateSchema, TEvent>;
     private interpreter: Interpreter<TContext, TStateSchema, TEvent>;
 
     constructor(props: HOCProps<TContext, TStateSchema, TEvent, P>) {
       super(props);
-      this.interpreter = interpret(machine).onTransition(this.onTransition);
+      this.machine = machine.withConfig(extendedConfig || {}, initialContext);
+      this.interpreter = interpret(this.machine).onTransition(this.onTransition);
     }
 
     componentDidMount(): void {
@@ -65,7 +70,7 @@ export function withXStateMachine<
 
     render(): ReactNode {
       const { current } = this.state;
-      return <Component current={current} interpreter={this.interpreter} {...this.props as P} />;
+      return <Component machine={this.machine} current={current} interpreter={this.interpreter} {...this.props as P} />;
     }
   };
 }

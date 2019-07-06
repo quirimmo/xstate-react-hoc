@@ -10,7 +10,7 @@ export interface AppMachineStateSchema {
 }
 
 export interface AppMachineEvent extends EventObject{
-  type: string;
+  type: 'TOGGLE' | 'OTHER' | string;
 }
 
 export interface AppMachineContext {
