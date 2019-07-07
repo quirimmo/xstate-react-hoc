@@ -1,57 +1,63 @@
 import React, { PureComponent, ComponentType, ReactNode } from 'react';
 import { Subtract } from 'utility-types';
 import {
-  MachineConfig, EventObject, StateSchema, StateMachine, Machine, Interpreter, interpret, State,
+  StateSchema,
+  MachineConfig, EventObject, StateMachine, Machine,
+  Interpreter, interpret, State, OmniEventObject, MachineOptions,
 } from 'xstate';
 
-export interface WithStateMachineProps<TContext, TStateSchema extends StateSchema, TEvent extends EventObject> {
+
+export interface WithStateMachineProps<TContext, TEvent extends EventObject> {
   machineState: State<TContext, TEvent>;
-  machine: StateMachine<TContext, TStateSchema, TEvent>;
+  machineContext: TContext;
+  machineEvent: OmniEventObject<TEvent>;
   sendEvent: (event: TEvent) => void;
 }
 
 type ComplexHOCType<U extends object, K extends U> = ComponentType<Subtract<K, U>>;
 
-type HOCProps<
-  TContext,
-  TStateSchema extends StateSchema,
-  TEvent extends EventObject,
-  T extends WithStateMachineProps<TContext, TStateSchema, TEvent>
-> = Subtract<T, WithStateMachineProps<TContext, TStateSchema, TEvent>>;
-
 export type HOCWithStateMachineType<
   TContext,
-  TStateSchema extends StateSchema,
   TEvent extends EventObject,
-  P extends WithStateMachineProps<TContext, TStateSchema, TEvent>
-> = ComplexHOCType<WithStateMachineProps<TContext, TStateSchema, TEvent>, P>;
+  P extends WithStateMachineProps<TContext, TEvent>
+> = ComplexHOCType<WithStateMachineProps<TContext, TEvent>, P>;
 
+type HOCProps<
+  TContext,
+  TEvent extends EventObject,
+  T extends WithStateMachineProps<TContext, TEvent>
+> = Subtract<T, WithStateMachineProps<TContext, TEvent>>;
 
 export interface WithStateMachineComponentState<TContext, TEvent extends EventObject> {
   machineState: State<TContext, TEvent>;
+  machineEvent: OmniEventObject<TEvent>;
 }
 
 export function withStateMachine<
   TContext,
   TStateSchema extends StateSchema,
-  TEvent extends EventObject,
-  P extends WithStateMachineProps<TContext, TStateSchema, TEvent>
+  TEventObject extends EventObject,
+  P extends WithStateMachineProps<TContext, TEventObject>
 >(
   Comp: ComponentType<P>,
-  machineConfig: MachineConfig<TContext, TStateSchema, TEvent>,
-): HOCWithStateMachineType<TContext, TStateSchema, TEvent, P> {
+  machineConfig: MachineConfig<TContext, TStateSchema, TEventObject>,
+  machineOptions?: Partial<MachineOptions<TContext, TEventObject>>,
+): HOCWithStateMachineType<TContext, TEventObject, P> {
   return class WithStateMachineComponent extends PureComponent<
-    HOCProps<TContext, TStateSchema, TEvent, P>,
-    WithStateMachineComponentState<TContext, TEvent>
+    HOCProps<TContext, TEventObject, P>,
+    WithStateMachineComponentState<TContext, TEventObject>
   > {
-    private machine: StateMachine<TContext, TStateSchema, TEvent>;
-    private interpreter: Interpreter<TContext, TStateSchema, TEvent>;
+    private machine: StateMachine<TContext, TStateSchema, TEventObject>;
+    private interpreter: Interpreter<TContext, TStateSchema, TEventObject>;
 
-    constructor(props: HOCProps<TContext, TStateSchema, TEvent, P>) {
+    constructor(props: HOCProps<TContext, TEventObject, P>) {
       super(props);
 
-      this.machine = Machine<TContext, TStateSchema, TEvent>(machineConfig);
-      this.state = { machineState: this.machine.initialState };
+      this.machine = Machine<TContext, TStateSchema, TEventObject>(machineConfig, machineOptions);
+      this.state = {
+        machineState: this.machine.initialState,
+        machineEvent: this.machine.initialState.event,
+      };
       this.interpreter = interpret(this.machine).onTransition(this.onTransition);
     }
 
@@ -63,19 +69,35 @@ export function withStateMachine<
       this.interpreter.stop();
     }
 
-    sendEvent = (event: TEvent): void => {
+    sendEvent = (event: TEventObject): void => {
       const { send } = this.interpreter;
       send(event);
     };
 
-    onTransition = (machineState: State<TContext, TEvent>): void => {
-      this.setState({ machineState });
+    onTransition = (
+      machineState: State<TContext, TEventObject>,
+      machineEvent: OmniEventObject<TEventObject>,
+    ): void => {
+      this.setState({
+        machineState,
+        machineEvent,
+      });
     };
 
     render(): ReactNode {
-      const { machineState } = this.state;
+      const { machineState, machineEvent } = this.state;
 
-      return <Comp sendEvent={this.sendEvent} machineState={machineState} machine={this.machine} {...this.props as P} />;
+      return (
+        <Comp
+          machineState={machineState}
+          machineContext={machineState.context}
+          machineEvent={machineEvent}
+
+          sendEvent={this.sendEvent}
+
+          {...this.props as P}
+        />
+      );
     }
   };
 }
