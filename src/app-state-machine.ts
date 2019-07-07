@@ -1,5 +1,5 @@
 import {
-  MachineConfig, State, StateSchema, assign, MachineOptions,
+  MachineConfig, State, StateSchema, assign, MachineOptions, EventObject, ActionObject,
 } from 'xstate';
 
 export enum AppMachineState {
@@ -16,12 +16,17 @@ export interface AppMachineToggleEvent {
   type: AppMachineEvent.TOGGLE;
 }
 
-export interface AppMachineSetTextEvent {
+export interface AppMachineSetTextEvent extends EventObject {
   type: AppMachineEvent.SET_TEXT;
   text: string;
 }
 
 export type AppMachineEventObject = AppMachineToggleEvent | AppMachineSetTextEvent;
+
+export enum AppMachineAction {
+  SET_TEXT = 'SET_TEXT',
+  ON_SET_TEXT = 'ON_SET_TEXT'
+}
 
 export interface AppMachineContext {
   text: string;
@@ -41,24 +46,22 @@ export const appStateMachineConfig: MachineConfig<AppMachineContext, AppMachineS
     [AppMachineState.HIDDEN]: {
       on: {
         [AppMachineEvent.TOGGLE]: { target: AppMachineState.VISIBLE },
-        [AppMachineEvent.SET_TEXT]: { internal: true, actions: [AppMachineEvent.SET_TEXT] },
+        [AppMachineEvent.SET_TEXT]: { internal: true, actions: [AppMachineAction.SET_TEXT, AppMachineAction.ON_SET_TEXT] },
       },
     },
     [AppMachineState.VISIBLE]: {
       on: {
         [AppMachineEvent.TOGGLE]: { target: AppMachineState.HIDDEN },
-        [AppMachineEvent.SET_TEXT]: { internal: true, actions: [AppMachineEvent.SET_TEXT] },
+        [AppMachineEvent.SET_TEXT]: { internal: true, actions: [AppMachineAction.SET_TEXT, AppMachineAction.ON_SET_TEXT] },
       },
     },
   },
 };
 
+const setTextAction: ActionObject<AppMachineContext, AppMachineSetTextEvent> = assign<AppMachineContext, AppMachineSetTextEvent>(
+  (ctx: AppMachineContext, { text }: AppMachineSetTextEvent): AppMachineContext => ({ text }),
+);
+
 export const appStateMachineOptions: Partial<
 MachineOptions<AppMachineContext, AppMachineEventObject>
-> = {
-  actions: {
-    [AppMachineEvent.SET_TEXT]: assign(
-      (ctx: AppMachineContext, ev: AppMachineEventObject): AppMachineContext => ({ text: (ev as AppMachineSetTextEvent).text }),
-    ),
-  },
-};
+> = { actions: { [AppMachineAction.SET_TEXT]: setTextAction } };

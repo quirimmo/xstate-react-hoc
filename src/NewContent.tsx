@@ -1,6 +1,9 @@
 import React, { PureComponent, ReactNode, ChangeEvent } from 'react';
+// import { ActionFunction, assign, ActionMeta } from 'xstate';
+import { ActionFunction } from 'xstate';
 import { withStateMachine, WithStateMachineProps } from './xstate-react-hoc/with-state-machine';
 import {
+  AppMachineAction,
   appStateMachineOptions,
   AppMachineEventObject,
   AppMachineStateSchema,
@@ -10,9 +13,18 @@ import {
   appStateMachineConfig,
 } from './app-state-machine';
 
+
 export type NewContentProps = WithStateMachineProps<AppMachineContext, AppMachineEventObject>;
 
 class NewContent extends PureComponent<NewContentProps> {
+  componentDidMount(): void {
+    const { machineState } = this.props;
+    const setTextAction: ActionFunction<AppMachineContext, AppMachineEventObject> = (
+      // ctx: AppMachineContext, ev: AppMachineEventObject, meta: ActionMeta<AppMachineContext, AppMachineEventObject>,
+    ): void => console.log('ON_SET_TEXT Action');
+    machineState.actions.push({ type: AppMachineAction.ON_SET_TEXT, exec: setTextAction });
+  }
+
   isVisible = (): boolean => {
     const { machineState } = this.props;
     return machineState.matches(AppMachineState.VISIBLE);
