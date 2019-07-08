@@ -24,7 +24,10 @@ export interface AppMachineSetTextEvent extends EventObject {
 export type AppMachineEventObject = AppMachineToggleEvent | AppMachineSetTextEvent;
 
 export enum AppMachineAction {
-  SET_TEXT = 'SET_TEXT',
+  SET_TEXT = 'SET_TEXT'
+}
+
+export enum AppMachineCustomAction {
   ON_SET_TEXT = 'ON_SET_TEXT'
 }
 
@@ -46,13 +49,21 @@ export const appStateMachineConfig: MachineConfig<AppMachineContext, AppMachineS
     [AppMachineState.HIDDEN]: {
       on: {
         [AppMachineEvent.TOGGLE]: { target: AppMachineState.VISIBLE },
-        [AppMachineEvent.SET_TEXT]: { internal: true, actions: [AppMachineAction.SET_TEXT, AppMachineAction.ON_SET_TEXT] },
+        [AppMachineEvent.SET_TEXT]: {
+          internal: true,
+          actions: [
+            AppMachineAction.SET_TEXT, AppMachineCustomAction.ON_SET_TEXT],
+        },
       },
     },
     [AppMachineState.VISIBLE]: {
       on: {
         [AppMachineEvent.TOGGLE]: { target: AppMachineState.HIDDEN },
-        [AppMachineEvent.SET_TEXT]: { internal: true, actions: [AppMachineAction.SET_TEXT, AppMachineAction.ON_SET_TEXT] },
+        [AppMachineEvent.SET_TEXT]: {
+          internal: true,
+          actions: [
+            AppMachineAction.SET_TEXT, AppMachineCustomAction.ON_SET_TEXT],
+        },
       },
     },
   },

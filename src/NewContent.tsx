@@ -1,9 +1,9 @@
 import React, { PureComponent, ReactNode, ChangeEvent } from 'react';
-// import { ActionFunction, assign, ActionMeta } from 'xstate';
-import { ActionFunction } from 'xstate';
+import { assign, ActionObject } from 'xstate';
 import { withStateMachine, WithStateMachineProps } from './xstate-react-hoc/with-state-machine';
 import {
-  AppMachineAction,
+  AppMachineCustomAction,
+  AppMachineSetTextEvent,
   appStateMachineOptions,
   AppMachineEventObject,
   AppMachineStateSchema,
@@ -14,15 +14,19 @@ import {
 } from './app-state-machine';
 
 
-export type NewContentProps = WithStateMachineProps<AppMachineContext, AppMachineEventObject>;
+export type NewContentProps = WithStateMachineProps<AppMachineContext, AppMachineEventObject, AppMachineCustomAction>;
 
 class NewContent extends PureComponent<NewContentProps> {
   componentDidMount(): void {
-    const { machineState } = this.props;
-    const setTextAction: ActionFunction<AppMachineContext, AppMachineEventObject> = (
-      // ctx: AppMachineContext, ev: AppMachineEventObject, meta: ActionMeta<AppMachineContext, AppMachineEventObject>,
-    ): void => console.log('ON_SET_TEXT Action');
-    machineState.actions.push({ type: AppMachineAction.ON_SET_TEXT, exec: setTextAction });
+    const { addActions } = this.props;
+
+    const onSetTextAction: ActionObject<AppMachineContext, AppMachineSetTextEvent> = assign<AppMachineContext, AppMachineSetTextEvent>(
+      (ctx: AppMachineContext, { text }: AppMachineSetTextEvent): AppMachineContext => {
+        console.log('External action defined!');
+        return { text };
+      },
+    );
+    addActions({ [AppMachineCustomAction.ON_SET_TEXT]: onSetTextAction });
   }
 
   isVisible = (): boolean => {
@@ -58,5 +62,6 @@ export default withStateMachine<
 AppMachineContext,
 AppMachineStateSchema,
 AppMachineEventObject,
-WithStateMachineProps<AppMachineContext, AppMachineEventObject>
+AppMachineCustomAction,
+WithStateMachineProps<AppMachineContext, AppMachineEventObject, AppMachineCustomAction>
 >(NewContent, appStateMachineConfig, appStateMachineOptions);

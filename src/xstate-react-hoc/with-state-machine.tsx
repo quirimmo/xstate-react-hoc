@@ -1,17 +1,19 @@
 import React, { PureComponent, ComponentType, ReactNode } from 'react';
 import { Subtract } from 'utility-types';
 import {
+  ActionObject,
   StateSchema,
   MachineConfig, EventObject, StateMachine, Machine,
   Interpreter, interpret, State, OmniEventObject, MachineOptions,
 } from 'xstate';
 
 
-export interface WithStateMachineProps<TContext, TEvent extends EventObject> {
+export interface WithStateMachineProps<TContext, TEvent extends EventObject, TAction extends string> {
   machineState: State<TContext, TEvent>;
   machineContext: TContext;
   machineEvent: OmniEventObject<TEvent>;
   sendEvent: (event: TEvent) => void;
+  addActions: (actions: Record<TAction, ActionObject<TContext, TEvent>>) => void;
 }
 
 type ComplexHOCType<U extends object, K extends U> = ComponentType<Subtract<K, U>>;
@@ -19,14 +21,16 @@ type ComplexHOCType<U extends object, K extends U> = ComponentType<Subtract<K, U
 export type HOCWithStateMachineType<
   TContext,
   TEvent extends EventObject,
-  P extends WithStateMachineProps<TContext, TEvent>
-> = ComplexHOCType<WithStateMachineProps<TContext, TEvent>, P>;
+  TAction extends string,
+  P extends WithStateMachineProps<TContext, TEvent, TAction>
+> = ComplexHOCType<WithStateMachineProps<TContext, TEvent, TAction>, P>;
 
 type HOCProps<
   TContext,
   TEvent extends EventObject,
-  T extends WithStateMachineProps<TContext, TEvent>
-> = Subtract<T, WithStateMachineProps<TContext, TEvent>>;
+  TAction extends string,
+  T extends WithStateMachineProps<TContext, TEvent, TAction>
+> = Subtract<T, WithStateMachineProps<TContext, TEvent, TAction>>;
 
 export interface WithStateMachineComponentState<TContext, TEvent extends EventObject> {
   machineState: State<TContext, TEvent>;
@@ -37,20 +41,21 @@ export function withStateMachine<
   TContext,
   TStateSchema extends StateSchema,
   TEventObject extends EventObject,
-  P extends WithStateMachineProps<TContext, TEventObject>
+  TAction extends string,
+  P extends WithStateMachineProps<TContext, TEventObject, TAction>
 >(
   Comp: ComponentType<P>,
   machineConfig: MachineConfig<TContext, TStateSchema, TEventObject>,
   machineOptions?: Partial<MachineOptions<TContext, TEventObject>>,
-): HOCWithStateMachineType<TContext, TEventObject, P> {
+): HOCWithStateMachineType<TContext, TEventObject, TAction, P> {
   return class WithStateMachineComponent extends PureComponent<
-    HOCProps<TContext, TEventObject, P>,
+    HOCProps<TContext, TEventObject, TAction, P>,
     WithStateMachineComponentState<TContext, TEventObject>
   > {
     private machine: StateMachine<TContext, TStateSchema, TEventObject>;
     private interpreter: Interpreter<TContext, TStateSchema, TEventObject>;
 
-    constructor(props: HOCProps<TContext, TEventObject, P>) {
+    constructor(props: HOCProps<TContext, TEventObject, TAction, P>) {
       super(props);
 
       this.machine = Machine<TContext, TStateSchema, TEventObject>(machineConfig, machineOptions);
@@ -74,6 +79,15 @@ export function withStateMachine<
       send(event);
     };
 
+    addActions = (actions: Record<string, ActionObject<TContext, TEventObject>>): void => {
+      const { machineState: { context } } = this.state;
+
+      this.machine = this.machine.withConfig({ actions }).withContext(context);
+      this.interpreter.stop();
+      this.interpreter = interpret(this.machine).onTransition(this.onTransition);
+      this.interpreter.start();
+    };
+
     onTransition = (
       machineState: State<TContext, TEventObject>,
       machineEvent: OmniEventObject<TEventObject>,
@@ -94,6 +108,8 @@ export function withStateMachine<
           machineEvent={machineEvent}
 
           sendEvent={this.sendEvent}
+
+          addActions={this.addActions}
 
           {...this.props as P}
         />
