@@ -1,9 +1,8 @@
 import React, { PureComponent, ReactNode, ChangeEvent } from 'react';
-import { assign, ActionObject } from 'xstate';
+import { ActionFunction } from 'xstate';
 import { withStateMachine, WithStateMachineProps } from './xstate-react-hoc/with-state-machine';
 import {
   AppMachineCustomAction,
-  AppMachineSetTextEvent,
   appStateMachineOptions,
   AppMachineEventObject,
   AppMachineStateSchema,
@@ -19,14 +18,7 @@ export type NewContentProps = WithStateMachineProps<AppMachineContext, AppMachin
 class NewContent extends PureComponent<NewContentProps> {
   componentDidMount(): void {
     const { addActions } = this.props;
-
-    const onSetTextAction: ActionObject<AppMachineContext, AppMachineSetTextEvent> = assign<AppMachineContext, AppMachineSetTextEvent>(
-      (ctx: AppMachineContext, { text }: AppMachineSetTextEvent): AppMachineContext => {
-        console.log('External action defined!');
-        return { text };
-      },
-    );
-    addActions({ [AppMachineCustomAction.ON_SET_TEXT]: onSetTextAction });
+    addActions({ [AppMachineCustomAction.ON_SET_TEXT]: this.onSetTextAction() });
   }
 
   isVisible = (): boolean => {
@@ -43,6 +35,14 @@ class NewContent extends PureComponent<NewContentProps> {
     const { sendEvent } = this.props;
     sendEvent({ type: AppMachineEvent.SET_TEXT, text: ev.currentTarget.value });
   };
+
+  onSetTextAction = (): ActionFunction<AppMachineContext, AppMachineEventObject> => (): void => { console.log('Hello world'); };
+  // onSetTextAction = (): ActionObject<AppMachineContext, AppMachineSetTextEvent> => assign<AppMachineContext, AppMachineSetTextEvent>(
+  //   (ctx: AppMachineContext, ev: AppMachineSetTextEvent): AppMachineContext => {
+  //     console.log('External action defined!', ctx, ev);
+  //     return ctx;
+  //   },
+  // );
 
   render(): ReactNode {
     const { machineContext: { text } } = this.props;

@@ -1,6 +1,7 @@
 import React, { PureComponent, ComponentType, ReactNode } from 'react';
 import { Subtract } from 'utility-types';
 import {
+  ActionFunction,
   ActionObject,
   StateSchema,
   MachineConfig, EventObject, StateMachine, Machine,
@@ -13,7 +14,7 @@ export interface WithStateMachineProps<TContext, TEvent extends EventObject, TAc
   machineContext: TContext;
   machineEvent: OmniEventObject<TEvent>;
   sendEvent: (event: TEvent) => void;
-  addActions: (actions: Record<TAction, ActionObject<TContext, TEvent>>) => void;
+  addActions: (actions: Record<TAction, ActionObject<TContext, TEvent> | ActionFunction<TContext, TEvent>>) => void;
 }
 
 type ComplexHOCType<U extends object, K extends U> = ComponentType<Subtract<K, U>>;
@@ -79,7 +80,7 @@ export function withStateMachine<
       send(event);
     };
 
-    addActions = (actions: Record<string, ActionObject<TContext, TEventObject>>): void => {
+    addActions = (actions: Record<string, ActionObject<TContext, TEventObject> | ActionFunction<TContext, TEventObject>>): void => {
       const { machineState: { context } } = this.state;
 
       this.machine = this.machine.withConfig({ actions }).withContext(context);
