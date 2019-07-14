@@ -1,9 +1,13 @@
 import {
-  MachineConfig, MachineOptions,
-  State, StateSchema, StatesConfig, StateNodeConfig,
-  assign, ActionObject,
+  MachineConfig,
+  MachineOptions,
+  State,
+  StateSchema,
+  StatesConfig,
+  StateNodeConfig,
+  assign,
+  ActionObject,
 } from 'xstate';
-
 
 export enum AppMachineState {
   HIDDEN = 'HIDDEN',
@@ -65,9 +69,10 @@ const hiddenState: StateNodeConfig<
 };
 
 const visibleState: StateNodeConfig<
-AppMachineContext,
-AppMachineStateSchema['states'][AppMachineState.VISIBLE],
-AppMachineEventObject> = {
+  AppMachineContext,
+  AppMachineStateSchema['states'][AppMachineState.VISIBLE],
+  AppMachineEventObject
+> = {
   on: {
     [AppMachineEvent.TOGGLE]: { target: AppMachineState.HIDDEN },
     [AppMachineEvent.SET_TEXT]: {
@@ -88,9 +93,10 @@ export const appStateMachineConfig: MachineConfig<AppMachineContext, AppMachineS
   states,
 };
 
-const setTextAction: ActionObject<AppMachineContext, AppMachineSetTextEvent> = assign<AppMachineContext, AppMachineSetTextEvent>(
-  (ctx: AppMachineContext, { text }: AppMachineSetTextEvent): AppMachineContext => ({ text }),
-);
+const setTextAction: ActionObject<AppMachineContext, AppMachineSetTextEvent> = assign<
+  AppMachineContext,
+  AppMachineSetTextEvent
+>((ctx: AppMachineContext, { text }: AppMachineSetTextEvent): AppMachineContext => ({ text }));
 
 export const appStateMachineOptions: Partial<
 MachineOptions<AppMachineContext, AppMachineEventObject>
