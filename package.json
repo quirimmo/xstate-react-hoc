@@ -19,7 +19,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:lib": "webpack --config webpack-lib.config.js"
+    "build:lib": "rm -rf dist&webpack --config webpack-lib.config.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -37,9 +37,13 @@
     ]
   },
   "devDependencies": {
+    "@types/enzyme": "^3.10.2",
+    "@types/enzyme-adapter-react-16": "^1.0.5",
     "@typescript-eslint/eslint-plugin": "^1.11.0",
     "@typescript-eslint/parser": "^1.11.0",
     "awesome-typescript-loader": "^5.2.1",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-config-prettier": "^6.0.0",
     "eslint-import-resolver-typescript": "^1.1.1",

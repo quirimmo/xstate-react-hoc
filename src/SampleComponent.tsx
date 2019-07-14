@@ -1,6 +1,7 @@
 import React, { PureComponent, ReactNode, ChangeEvent } from 'react';
 import { ActionFunction } from 'xstate';
-import { withStateMachine, WithStateMachineProps } from './xstate-react-hoc/with-state-machine';
+import { WithStateMachineProps } from './lib/with-state-machine';
+import { withStateMachine } from './lib';
 import {
   AppMachineCustomAction,
   appStateMachineOptions,
@@ -13,9 +14,9 @@ import {
 } from './app-state-machine';
 
 
-export type NewContentProps = WithStateMachineProps<AppMachineContext, AppMachineEventObject>;
+export type SampleComponentProps = WithStateMachineProps<AppMachineContext, AppMachineEventObject>;
 
-class NewContent extends PureComponent<NewContentProps> {
+class SampleComponent extends PureComponent<SampleComponentProps> {
   componentDidMount(): void {
     const { extendConfig } = this.props;
     extendConfig({ actions: { [AppMachineCustomAction.ON_SET_TEXT]: this.onSetTextAction() } });
@@ -57,4 +58,4 @@ AppMachineContext,
 AppMachineStateSchema,
 AppMachineEventObject,
 WithStateMachineProps<AppMachineContext, AppMachineEventObject>
->(NewContent, appStateMachineConfig, appStateMachineOptions);
+>(SampleComponent, appStateMachineConfig, appStateMachineOptions);

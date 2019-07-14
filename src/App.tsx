@@ -1,22 +1,15 @@
 import React, { PureComponent, ReactNode } from 'react';
 import './App.css';
-// import Content from './Content';
-// import FunctionalContent from './FunctionalContent';
-import NewContent from './NewContent';
+import SampleComponent from './SampleComponent';
 
 class App extends PureComponent {
   render(): ReactNode {
     return (
       <div className="app-wrapper">
-        <NewContent />
-        {/* <br />
-        <br />
-        <Content />
-        <FunctionalContent /> */}
+        <SampleComponent />
       </div>
     );
   }
 }
-
 
 export default App;
