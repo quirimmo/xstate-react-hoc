@@ -55,10 +55,11 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['setupTests.ts', '*.spec.*', '*.test.*'],
+      files: ['setupTests.ts', '*.spec.*', '*.test.*', '__mocks__/**/*.*'],
       rules: {
         'import/no-extraneous-dependencies': 0,
-        '@typescript-eslint/explicit-function-return-type': 0
+        '@typescript-eslint/explicit-function-return-type': 0,
+        '@typescript-eslint/no-explicit-any': 0
       }
     }
   ],
