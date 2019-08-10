@@ -7,6 +7,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:watch": "react-scripts test --watch",
+    "test:coverage": "set CI=true && yarn test --coverage --collectCoverageFrom=src/lib/*.tsx",
     "eject": "react-scripts eject",
     "build:lib": "rm -rf dist&webpack --config webpack-lib.config.js"
   },

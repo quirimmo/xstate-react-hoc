@@ -5,11 +5,17 @@ language: node_js
 node_js:
   - '10.16'
 
+before_install:
+  - echo "Running Before Install..."
+  - npm i -g yarn
+
 install:
-  # - yarn install
+  - echo "Running Install..."
+  - yarn install
   
 script:
-  - echo "Triggered!"
+  - echo "Running Script..."
+  - yarn test:coverage
 
 after_success:
-  - echo "Finished!"
+  - echo "Running After Success..."
