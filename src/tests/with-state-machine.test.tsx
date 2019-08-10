@@ -13,7 +13,7 @@ const machineConfig: any = {
 };
 const machineOptions: any = {};
 
-const BaseComponent = (props: any) => <div {...props} />;
+const BaseComponent = (props: any) => <div id="base-component" {...props} />;
 const WithStateMachineComponent = withStateMachine(BaseComponent, machineConfig, machineOptions);
 
 let component: ShallowWrapper<WithStateMachineProps<any, any>, WithStateMachineComponentState<any, any>>;
@@ -21,7 +21,7 @@ let instance: any;
 
 describe('withStateMachine', () => {
   beforeEach(() => {
-    component = shallow<WithStateMachineProps<any, any>>(<WithStateMachineComponent inner-prop="inner-value" />);
+    component = shallow<WithStateMachineProps<any, any>>(<WithStateMachineComponent innerProp="inner-value" />);
     instance = component.instance();
   });
   afterEach(() => {
@@ -77,7 +77,7 @@ describe('withStateMachine', () => {
 
   describe('extendConfig', () => {
     describe('withConfig', () => {
-      test('should call the withConfig method with the given opts and context', () => {
+      test('should call the withConfig method with the given opts and the given context', () => {
         const opts = {};
         const ctx = 'new-context';
         const mockWithConfig = instance.machine.withConfig;
@@ -85,7 +85,7 @@ describe('withStateMachine', () => {
         expect(mockWithConfig).toHaveBeenCalledWith(opts, ctx);
       });
 
-      test('should call the withConfig method with the given opts and the current', () => {
+      test('should call the withConfig method with the given opts and the current context', () => {
         const opts = {};
         const mockWithConfig = instance.machine.withConfig;
         instance.extendConfig(opts);
@@ -108,33 +108,49 @@ describe('withStateMachine', () => {
     });
   });
 
-  // extendConfig = (opts: Partial<MachineOptions<TContext, TEventObject>>, ctx?: TContext): void => {
-  //   const { machineState: { context: oldContext } } = this.state;
-  //   const context = ctx || oldContext;
-  //   this.machine = this.machine.withConfig(opts, context);
-  //   this.interpreter.stop();
-  //   this.interpreter = interpret(this.machine).onTransition(this.onTransition);
-  //   this.interpreter.start();
-  // };
+  describe('onTransition', () => {
+    test('should set the state', () => {
+      jest.spyOn(instance, 'setState').mockImplementation(() => {});
+      const machineState = 'machine-state';
+      const machineEvent = 'machine-event';
+      instance.onTransition(machineState, machineEvent);
+      expect(instance.setState).toHaveBeenLastCalledWith({ machineState, machineEvent });
+    });
+  });
 
-  // onTransition = (
-  //   machineState: State<TContext, TEventObject>,
-  //   machineEvent: OmniEventObject<TEventObject>,
-  // ): void => this.setState({ machineState, machineEvent });
+  describe('render', () => {
+    let baseComponent: ShallowWrapper;
 
-  // render(): ReactNode {
-  //   const { machineState, machineEvent } = this.state;
+    beforeEach(() => {
+      baseComponent = component.find(BaseComponent);
+    });
 
-  //   return (
-  //     <Comp
-  //       machineState={machineState}
-  //       machineContext={machineState.context}
-  //       machineEvent={machineEvent}
-  //       sendEvent={this.sendEvent}
-  //       extendConfig={this.extendConfig}
+    it('should render the inner component', () => {
+      expect(baseComponent.exists()).toBeTruthy();
+    });
 
-  //       {...this.props as P}
-  //     />
-  //   );
-  // }
+    test('should add the machineState prop to the given component', () => {
+      expect(baseComponent.prop('machineState')).toEqual(machineConfig.initialState);
+    });
+
+    test('should add the machineContext prop to the given component', () => {
+      expect(baseComponent.prop('machineContext')).toEqual(machineConfig.initialState.context);
+    });
+
+    test('should add the machineEvent prop to the given component', () => {
+      expect(baseComponent.prop('machineEvent')).toEqual(machineConfig.initialState.event);
+    });
+
+    test('should add the sendEvent prop to the given component', () => {
+      expect(baseComponent.prop('sendEvent')).toEqual(instance.sendEvent);
+    });
+
+    test('should add the extendConfig prop to the given component', () => {
+      expect(baseComponent.prop('extendConfig')).toEqual(instance.extendConfig);
+    });
+
+    test('should keep the original props of the given component', () => {
+      expect(baseComponent.prop('innerProp')).toEqual('inner-value');
+    });
+  });
 });
