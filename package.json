@@ -8,6 +8,7 @@
     "test": "react-scripts test",
     "test:watch": "react-scripts test --watch",
     "test:coverage": "set CI=true && yarn test --coverage --collectCoverageFrom=src/lib/*.tsx",
+    "codecov": "codecov --token=7714703d-e060-4779-a5af-ab9f43dd32a0",
     "eject": "react-scripts eject",
     "build:lib": "rm -rf dist&webpack --config webpack-lib.config.js"
   },
@@ -44,6 +45,7 @@
     "@typescript-eslint/eslint-plugin": "^1.11.0",
     "@typescript-eslint/parser": "^1.11.0",
     "awesome-typescript-loader": "^5.2.1",
+    "codecov": "^3.5.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "eslint-config-airbnb": "^17.1.1",

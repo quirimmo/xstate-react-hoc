@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/quirimmo/xstate-react-hoc.svg?branch=master)](https://travis-ci.org/quirimmo/xstate-react-hoc)
 
+[![codecov](https://codecov.io/gh/quirimmo/xstate-react-hoc/branch/master/graph/badge.svg)](https://codecov.io/gh/TechnionYP5777/project-name)
 
 
 ## Available Scripts
