@@ -1,0 +1,15 @@
+sudo: required
+dist: trusty
+
+language: node_js
+node_js:
+  - '10.16'
+
+install:
+  # - yarn install
+  
+script:
+  - echo "Triggered!"
+
+after_success:
+  - echo "Finished!"
