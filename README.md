@@ -1,4 +1,8 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# xstate-react-hoc
+
+[![Build Status](https://travis-ci.org/quirimmo/xstate-react-hoc.svg?branch=master)](https://travis-ci.org/quirimmo/xstate-react-hoc)
+
+
 
 ## Available Scripts
 
