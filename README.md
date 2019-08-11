@@ -1,9 +1,8 @@
 # xstate-react-hoc
 
-[![Build Status](https://travis-ci.org/quirimmo/xstate-react-hoc.svg?branch=master)](https://travis-ci.org/quirimmo/xstate-react-hoc)
+![Travis (.org)](https://img.shields.io/travis/quirimmo/xstate-react-hoc?style=for-the-badge)
 
-[![codecov](https://codecov.io/gh/quirimmo/xstate-react-hoc/branch/master/graph/badge.svg)](https://codecov.io/gh/TechnionYP5777/project-name)
-
+![Codecov](https://img.shields.io/codecov/c/github/quirimmo/xstate-react-hoc?style=for-the-badge)
 
 ## Available Scripts
 
