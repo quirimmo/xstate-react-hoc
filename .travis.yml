@@ -20,3 +20,16 @@ script:
 after_success:
   - echo "Running After Success..."
   - yarn codecov
+
+jobs:
+  include:
+    - stage: npm release
+      node_js: "10.16"
+      script: echo "Deploying to npm ..."
+      deploy:
+        provider: npm
+        email: "quirimmo@gmail.com"
+        api_key: $NPM_API_KEY
+        gem: travis-build-stages-demo
+        on: deploy-npm-release
+        
