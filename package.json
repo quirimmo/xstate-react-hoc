@@ -1,7 +1,13 @@
 {
   "name": "xstate-react-hoc",
   "version": "0.1.1",
-  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quirimmo/xstate-react-hoc.git"
+  },
+  "homepage": "https://github.com/quirimmo/xstate-react-hoc",
+  "keywords": [],
+  "author": "Quirino Lo Russo",
   "license": "MIT",
   "scripts": {
     "start": "react-scripts start",

@@ -31,5 +31,6 @@ jobs:
         email: "quirimmo@gmail.com"
         api_key: $NPM_API_KEY
         gem: travis-build-stages-demo
+        skip_cleanup: true
         on: master
         # on: deploy-npm-release
