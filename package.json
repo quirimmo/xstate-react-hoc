@@ -1,12 +1,12 @@
 {
   "name": "xstate-react-hoc",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/quirimmo/xstate-react-hoc.git"
   },
   "homepage": "https://github.com/quirimmo/xstate-react-hoc",
-  "keywords": [],
+  "keywords": ["xstate", "react", "react xstate", "xstate react", "xstate react", "xstate-react-hoc", "xstate hoc"],
   "author": "Quirino Lo Russo",
   "license": "MIT",
   "scripts": {
