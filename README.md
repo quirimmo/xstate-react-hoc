@@ -4,6 +4,8 @@
 
 ![Codecov](https://img.shields.io/codecov/c/github/quirimmo/xstate-react-hoc?style=for-the-badge)
 
+![GitHub repo size](https://img.shields.io/github/repo-size/quirimmo/xstate-react-hoc?style=for-the-badge)
+
 ## Available Scripts
 
 In the project directory, you can run:
